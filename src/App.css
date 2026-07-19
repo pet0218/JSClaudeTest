@@ -49,6 +49,81 @@ h1 {
   font-weight: bold;
 }
 
+.main-nav {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 12px;
+}
+
+.main-nav a {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.main-nav a.active {
+  color: #333;
+  font-weight: bold;
+}
+
+.report-problem {
+  border: 1px solid #ddd;
+  padding: 16px;
+  margin-bottom: 24px;
+  background: #fff;
+  max-width: 480px;
+}
+
+.report-problem h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.report-problem form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-problem input,
+.report-problem textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.report-problem button {
+  align-self: flex-start;
+  padding: 8px 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.report-problem button:disabled {
+  background: #999;
+  cursor: default;
+}
+
+.form-status {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.form-status-success {
+  color: green;
+}
+
+.form-status-error {
+  color: red;
+}
+
 .add-transaction {
   border: 1px solid #ddd;
   padding: 16px;
