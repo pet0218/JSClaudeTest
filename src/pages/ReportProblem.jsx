@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_URL = "http://localhost:3001/api/reports";
+const API_URL = "/api/reports";
 
 function ReportProblem() {
   const [employeeName, setEmployeeName] = useState("");
