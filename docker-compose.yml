@@ -31,5 +31,14 @@ services:
       PGPASSWORD: expense_tracker
       PGDATABASE: expense_tracker
 
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
 volumes:
   pgdata:
