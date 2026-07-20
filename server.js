@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import pg from "pg";
 import { initialTransactions } from "./src/data/transactions.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPORTS_FILE = path.join(__dirname, "reports.json");
+// Return BIGINT columns as JS numbers instead of strings.
+pg.types.setTypeParser(20, (val) => parseInt(val, 10));
+
+const pool = new pg.Pool();
 
 const app = express();
 const PORT = 3001;
@@ -14,43 +14,35 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-function readReports() {
-  if (!fs.existsSync(REPORTS_FILE)) return [];
-  return JSON.parse(fs.readFileSync(REPORTS_FILE, "utf-8"));
-}
-
-function writeReports(reports) {
-  fs.writeFileSync(REPORTS_FILE, JSON.stringify(reports, null, 2));
-}
+const REPORTS_SELECT = `
+  SELECT id, employee_name AS "employeeName", employee_id AS "employeeId", problem, created_at AS "createdAt"
+  FROM reports
+`;
 
 app.get("/api/transactions", (req, res) => {
   res.json(initialTransactions);
 });
 
-app.get("/api/reports", (req, res) => {
-  res.json(readReports());
+app.get("/api/reports", async (req, res) => {
+  const { rows } = await pool.query(`${REPORTS_SELECT} ORDER BY created_at ASC`);
+  res.json(rows);
 });
 
-app.post("/api/reports", (req, res) => {
+app.post("/api/reports", async (req, res) => {
   const { employeeName, employeeId, problem } = req.body;
 
   if (!employeeName || !employeeId || !problem) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const report = {
-    id: Date.now(),
-    employeeName,
-    employeeId,
-    problem,
-    createdAt: new Date().toISOString(),
-  };
+  const { rows } = await pool.query(
+    `INSERT INTO reports (id, employee_name, employee_id, problem, created_at)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id, employee_name AS "employeeName", employee_id AS "employeeId", problem, created_at AS "createdAt"`,
+    [Date.now(), employeeName, employeeId, problem, new Date()]
+  );
 
-  const reports = readReports();
-  reports.push(report);
-  writeReports(reports);
-
-  res.status(201).json(report);
+  res.status(201).json(rows[0]);
 });
 
 app.listen(PORT, () => {
