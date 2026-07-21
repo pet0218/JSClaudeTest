@@ -3,8 +3,12 @@ CREATE TABLE IF NOT EXISTS reports (
   employee_name TEXT NOT NULL,
   employee_id TEXT NOT NULL,
   problem TEXT NOT NULL,
+  location TEXT,
   created_at TIMESTAMPTZ NOT NULL
 );
+
+-- Safe to re-run against an already-initialized database (fresh volumes get this via CREATE TABLE above).
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS location TEXT;
 
 -- Data migrated from the old reports.json file store.
 INSERT INTO reports (id, employee_name, employee_id, problem, created_at) VALUES

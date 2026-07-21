@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 const REPORTS_SELECT = `
-  SELECT id, employee_name AS "employeeName", employee_id AS "employeeId", problem, created_at AS "createdAt"
+  SELECT id, employee_name AS "employeeName", employee_id AS "employeeId", problem, location, created_at AS "createdAt"
   FROM reports
 `;
 
@@ -29,17 +29,17 @@ app.get("/api/reports", async (req, res) => {
 });
 
 app.post("/api/reports", async (req, res) => {
-  const { employeeName, employeeId, problem } = req.body;
+  const { employeeName, employeeId, problem, location } = req.body;
 
-  if (!employeeName || !employeeId || !problem) {
+  if (!employeeName || !employeeId || !problem || !location) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   const { rows } = await pool.query(
-    `INSERT INTO reports (id, employee_name, employee_id, problem, created_at)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, employee_name AS "employeeName", employee_id AS "employeeId", problem, created_at AS "createdAt"`,
-    [Date.now(), employeeName, employeeId, problem, new Date()]
+    `INSERT INTO reports (id, employee_name, employee_id, problem, location, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, employee_name AS "employeeName", employee_id AS "employeeId", problem, location, created_at AS "createdAt"`,
+    [Date.now(), employeeName, employeeId, problem, location, new Date()]
   );
 
   res.status(201).json(rows[0]);

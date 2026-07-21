@@ -6,24 +6,26 @@ function ReportProblem() {
   const [employeeName, setEmployeeName] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [problem, setProblem] = useState("");
+  const [location, setLocation] = useState("");
   const [status, setStatus] = useState("idle"); // idle | saving | success | error
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!employeeName || !employeeId || !problem) return;
+    if (!employeeName || !employeeId || !problem || !location) return;
 
     setStatus("saving");
     try {
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeName, employeeId, problem }),
+        body: JSON.stringify({ employeeName, employeeId, problem, location }),
       });
       if (!res.ok) throw new Error("Request failed");
 
       setEmployeeName("");
       setEmployeeId("");
       setProblem("");
+      setLocation("");
       setStatus("success");
     } catch {
       setStatus("error");
@@ -45,6 +47,12 @@ function ReportProblem() {
           placeholder="ID zamestnanca"
           value={employeeId}
           onChange={(e) => setEmployeeId(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Lokalita problému"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
         />
         <textarea
           placeholder="Popis problému"
