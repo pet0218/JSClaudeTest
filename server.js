@@ -28,6 +28,13 @@ app.get("/api/reports", async (req, res) => {
   res.json(rows);
 });
 
+app.get("/api/solutions", async (req, res) => {
+  const { rows } = await pool.query(
+    `SELECT id, name, coverage_percent AS "coveragePercent" FROM solutions ORDER BY coverage_percent DESC`
+  );
+  res.json(rows);
+});
+
 app.post("/api/reports", async (req, res) => {
   const { employeeName, employeeId, problem, location } = req.body;
 

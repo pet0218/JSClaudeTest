@@ -20,3 +20,21 @@ INSERT INTO reports (id, employee_name, employee_id, problem, created_at) VALUES
   (1784481159297, 'Peter Testovací', 'EMP-999', 'Formulár neodosiela dáta.', '2026-07-19T17:12:39.297Z'),
   (1784481159590, 'Peter Testovací', 'EMP-999', 'Formulár neodosiela dáta.', '2026-07-19T17:12:39.590Z')
 ON CONFLICT (id) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS solutions (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  coverage_percent NUMERIC(5, 2) NOT NULL
+);
+
+-- Top 5 investment suggestions from LLM analysis of report descriptions
+-- (see analysis/suggest_investments_llm.py).
+INSERT INTO solutions (name, coverage_percent)
+SELECT * FROM (VALUES
+  ('Servisný a preventívny program HVAC (klíma, kúrenie, kotly, radiátory)', 25.00),
+  ('Zmluva na servis a obnovu poľnohospodárskej techniky', 22.00),
+  ('Modernizácia IT infraštruktúry (sieť, VPN, PC, periférie)', 16.00),
+  ('Program údržby budov skladov/hál (brány, výťahy, regály, zámky)', 15.00),
+  ('Farmárska prevádzková infraštruktúra (chladenie mlieka, studne/čerpadlá)', 8.00)
+) AS seed(name, coverage_percent)
+WHERE NOT EXISTS (SELECT 1 FROM solutions);
